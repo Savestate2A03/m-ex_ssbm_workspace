@@ -21,7 +21,7 @@ void start() {
 
 void _patch() {
     // max heaps to 7 (ie. INJECT_HEAP_ID) so it doesn't get
-    // destroyed by the heap library (which checks for 2-6)
+    // destroyed by the heap library (which checks for 2-5)
     stc_max_number_of_heaps = INJECT_HEAP_ID + 1;
 
     // before : li r4, 4
