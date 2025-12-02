@@ -6,6 +6,4 @@
 #include "mex.h"
 #pragma longcall(0)
 
-extern void _breakpoint_helper(unsigned int);
-
 #endif // H_SYSTEM_REI_WOLF

@@ -36,7 +36,8 @@ def main():
     hex_rgx_matches = re.findall(hex_rgx, inject_hex)
     hex_rgx_matches_orig = hex_rgx_matches
 
-    hex_rgx_matches_orig.append('00000000')
+    if len(hex_rgx_matches) % 2 == 1:
+        hex_rgx_matches_orig.append('00000000')
 
     fn_names_rgx = r"4[0-9a-fA-F]{7}\s+<(\S+)>:"
     fn_names_rgx_replacement = r"\1:"
@@ -113,7 +114,9 @@ def main():
         except:
             pass
 
-    inject.append('.long 0x00000000')
+    if len(hex_rgx_matches) % 2 == 1:
+        inject.append('\n_extract_hex_py_padding:')
+        inject.append('.long 0x00000000')
 
     inject = "\n".join(inject)
 
