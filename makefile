@@ -20,7 +20,7 @@ SRC_DIR := ./src
 LINKS_DIR := ./m-ex/MexTK/links
 
 # Includes
-INCLUDE_DIR := -I./m-ex/MexTK/include -I./include/system -I./include/src
+INCLUDE_DIR := -I./m-ex/MexTK/include -I./include/system -I./include/user
 
 # Outputs
 OUTPUT_ELF := $(OUTPUT_DIR)/inject.elf
@@ -45,16 +45,13 @@ CFLAGS += -ffreestanding                  # No standard library
 CFLAGS += -fno-hosted                     # Bare metal
 CFLAGS += $(CFLAGS_EXTRAS) $(INCLUDE_DIR)
 
-ASFLAGS := -mregnames -mgekko
-LDFLAGS := -Map=$(OUTPUT_MAP) -nostdlib -e _start
+LDFLAGS := -Map=$(OUTPUT_MAP) -nostdlib -e __patch
 OBJDUMP_FLAGS := -D --disassemble-zeroes --insn-width=4
 OBJDUMP_FLAGS_HEX := -s --disassemble-zeroes
 
 # Sources
 LINKER_SCRIPT := $(BUILD_DIR)/melee.ld
-C_OBJECTS := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(wildcard $(SRC_DIR)/*.c))
-ASM_OBJECTS := $(patsubst $(SRC_DIR)/%.s,$(BUILD_DIR)/%.o,$(wildcard $(SRC_DIR)/*.s))
-ALL_OBJECTS := $(SYSTEM_BUILD_DIR)/_start.o $(ASM_OBJECTS) $(C_OBJECTS)
+ALL_OBJECTS := $(patsubst $(SRC_DIR)/%.c,$(BUILD_DIR)/%.o,$(shell find $(SRC_DIR) -name '*.c'))
 
 # Targets
 all: $(OUTPUT_BIN) $(OUTPUT_ASM) $(OUTPUT_ASM_HEX) hex
@@ -73,17 +70,8 @@ $(LINKER_SCRIPT): $(LINKS_DIR)/melee.link | $(BUILD_DIR)
 # C
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c | $(BUILD_DIR)
 	@echo "Compiling: $<"
+	@mkdir -p $(dir $@)
 	$(CC) -c $(CFLAGS) $< -o $@
-
-# ASM (System)
-$(SYSTEM_BUILD_DIR)/%.o: system/%.s | $(SYSTEM_BUILD_DIR)
-	@echo "Assembling: $<"
-	$(AS) $(ASFLAGS) $< -o $@
-
-# ASM (User)
-$(BUILD_DIR)/%.o: $(SRC_DIR)/%.s | $(BUILD_DIR)
-	@echo "Assembling: $<"
-	$(AS) $(ASFLAGS) $< -o $@
 
 # Link
 $(OUTPUT_ELF): $(ALL_OBJECTS) $(LINKER_SCRIPT) | $(OUTPUT_DIR)

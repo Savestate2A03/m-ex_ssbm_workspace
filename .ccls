@@ -3,7 +3,7 @@
 %h -x c
 
 -I./include/system
--I./include/src
+-I./include/user
 -I./m-ex/MexTK/include
 
 -DGEKKO
