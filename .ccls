@@ -2,6 +2,8 @@
 %c -std=c23
 %h -x c
 
+-target=powerpc-eabi
+
 -I./include/system
 -I./include/user
 -I./m-ex/MexTK/include

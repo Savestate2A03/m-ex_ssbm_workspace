@@ -22,28 +22,40 @@ OUT="$2"
     cat <<'EOF'
 SECTIONS
 {
-    . = 0x40000000;
+    . = 0x7C000000;
+
+    __rei_wolf_text_lo = .;
 
     .text : {
-        *(.text.__patch)
+        *(.text._patch)
         *(.text)
         *(.text.*)
         . = ALIGN(4);
-        __rei_wolf_rodata_start = .;
+
+        __rei_wolf_rodata_lo = .;
         *(.rodata)
         *(.rodata.*)
         . = ALIGN(4);
-        __rei_wolf_got2_start = .;
+        __rei_wolf_rodata_hi = .;
+
+        __rei_wolf_got2_lo = .;
         *(.got2)
         . = ALIGN(4);
-        __rei_wolf_got2_end = .;
-        __rei_wolf_data_start = .;
+        __rei_wolf_got2_hi = .;
+
+        __rei_wolf_data_lo = .;
         *(.data)
         . = ALIGN(4);
         *(.data.*)
         . = ALIGN(4);
-        __rei_wolf_data_end = .;
+        __rei_wolf_data_hi = .;
+
+        __rei_wolf_pad_lo = .;
+        . = ALIGN(8);
+        __rei_wolf_pad_hi = .;
     }
+
+    __rei_wolf_text_hi = .;
 
     /DISCARD/ : {
         *(.eh_frame)

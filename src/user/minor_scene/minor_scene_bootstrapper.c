@@ -1,35 +1,11 @@
 #include "system.h"
 
-#include "alloc.h"
-#include "minor_scene_bootstrapper.h"
+#include "allocator/allocator.h"
+#include "minor_scene/bootstrapper.h"
 
-#define MSB_MAX_SIZE 32
-
-// Slightly modified version of MinorSceneDesc from m-ex/structs.h
-typedef struct MinorSceneDesc_Modified {
-    u32 id: 8;
-    u32 unk_x1: 24;
-    void (*Think)();
-    void (*Load)(void *data);
-    void (*Exit)(void *data);
-    u32 unk_x14;
-} MinorSceneDesc_Modified;
-
-typedef struct MSB_Data {
-    MSB_Think think;
-    MSB_Load load;
-    MSB_Exit exit;
-    u8 id: 8;
-    bool taken;
-} MSB_Data;
-
-typedef struct MinorSceneBootstrapper {
-    MSB_Data data[MSB_MAX_SIZE];
-} MinorSceneBootstrapper;
-
-// Add 803DA91C:stc_Scene_MinorDescTable to melee.link
-extern MinorSceneDesc_Modified stc_Scene_MinorDescTable[0x2D];
 static MinorSceneBootstrapper* MSB = NULL;
+
+// Early version, will likely make this far better with time
 
 /** ---------- Private ---------- */
 

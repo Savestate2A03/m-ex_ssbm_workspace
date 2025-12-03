@@ -54,9 +54,8 @@ typedef struct INJECT_Region {
 } INJECT_Region;
 
 void* INJECT_Alloc(size_t size);
-void* INJECT_Free(void* ptr);
+void INJECT_Free(void* ptr);
 void INJECT_CreateHeapSpace();
-void* INJECT_GetHeapPointer();
 void INJECT_Prepare(INJECT_SELECTION idx);
 
 #endif // REI_WOLF_ALLOC_H
