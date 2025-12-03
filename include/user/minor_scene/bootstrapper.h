@@ -5,6 +5,11 @@
 
 #define MSB_MAX_SIZE 32
 
+typedef void (*MSB_Think)(void);
+typedef void (*MSB_Load)(void* data);
+typedef void (*MSB_Exit)(void* data);
+
+
 // Slightly modified version of MinorSceneDesc from m-ex/structs.h
 typedef struct MinorSceneDesc_Modified {
     u32 id: 8;
@@ -26,10 +31,6 @@ typedef struct MSB_Data {
 typedef struct MinorSceneBootstrapper {
     MSB_Data data[MSB_MAX_SIZE];
 } MinorSceneBootstrapper;
-
-typedef void (*MSB_Think)(void);
-typedef void (*MSB_Load)(void* data);
-typedef void (*MSB_Exit)(void* data);
 
 typedef struct MSB_CallbackExisting {
     MSB_Think MSB_ExistingThink;

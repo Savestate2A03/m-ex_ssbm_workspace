@@ -45,7 +45,7 @@ CFLAGS += -ffreestanding                  # No standard library
 CFLAGS += -fno-hosted                     # Bare metal
 CFLAGS += $(CFLAGS_EXTRAS) $(INCLUDE_DIR)
 
-LDFLAGS := -Map=$(OUTPUT_MAP) -nostdlib -e __patch
+LDFLAGS := -Map=$(OUTPUT_MAP) -nostdlib -e _patch
 OBJDUMP_FLAGS := -D --disassemble-zeroes --insn-width=4
 OBJDUMP_FLAGS_HEX := -s --disassemble-zeroes
 
