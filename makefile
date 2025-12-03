@@ -100,7 +100,7 @@ $(OUTPUT_ASM_HEX): $(OUTPUT_ELF)
 # Extract from disasm for use in (for example) Melee Code Manager
 hex: $(OUTPUT_ASM) $(OUTPUT_BIN)
 	@if [ -n "$(PYTHON)" ]; then \
-		$(PYTHON) extract_hex.py $(OUTPUT_ASM) $(OUTPUT_ASM_HEX); \
+		$(PYTHON) extract_hex.py $(OUTPUT_ASM) $(OUTPUT_ASM_HEX) $(LINKER_SCRIPT); \
 	else \
 		echo "Error: Python not found."; \
 		exit 1; \
