@@ -1,9 +1,12 @@
 #include "system.h"
 
 #include "allocator/allocator.h"
+#include "patch/patch.h"
 
 #include "minor_scene/bootstrapper.h"
 #include "minor_scene/scenes/css.h"
+
+#include "patch/example/example.h"
 
 // TO BE INJECTED INTO JUMP TO `main` from _init @ 0x80005338
 
@@ -15,49 +18,25 @@
  *  featured type of thing hopefully. 
  */
 
-// typedefs just for _start.c
-typedef unsigned int x32;
-typedef unsigned short x16;
-typedef unsigned char x8;
-
-// Patching related helper inlines
-inline void _patch_x32(x32* address, x32 data) {
-    *address = data;
-    DCFlushRange(address, 4);
-    ICInvalidateRange(address, 4);
-}
-inline void _patch_x16(x16* address, x16 data) {
-    *address = data;
-    DCFlushRange(address, 4);
-    ICInvalidateRange(address, 4);
-}
-inline void _patch_x8(x8* address, x8 data) {
-    *address = data;
-    DCFlushRange(address, 4);
-    ICInvalidateRange(address, 4);
-}
-
-// References to the .got2 table
-extern x32 __rei_wolf_got2_lo[];
-extern x32 __rei_wolf_got2_hi[];
+// .got2 references
+extern u32 __rei_wolf_got2_lo[];
+extern u32 __rei_wolf_got2_hi[];
 
 // Static array of function pointers to run after _patch
 static void* _patch_inject_init_va[] = {
     INJECT_CreateHeapSpace,
     CSS_Bootstrap,
+    PATCH_Example_Patches,
     NULL
 };
 
 // Repoints the pointers to static data in .got2 to their runtime equivalents
 // while making sure that pointers to Melee-space static data does not change
 void _relocate_got2_table(void) {
-    extern x8 __rei_wolf_text_lo[]; // inserted in linker script at 0x7C000000
+    extern u8 __rei_wolf_text_lo[];
     size_t offset = (size_t)__rei_wolf_text_lo - 0x7C000000;
     
-    extern x32 __rei_wolf_got2_lo[];
-    extern x32 __rei_wolf_got2_hi[];
-    
-    for (x32* entry = __rei_wolf_got2_lo; entry < __rei_wolf_got2_hi; entry++) {
+    for (u32* entry = __rei_wolf_got2_lo; entry < __rei_wolf_got2_hi; entry++) {
         if ((*entry >> 26) == 0x1F) {
             *entry += offset;
         }
@@ -71,10 +50,10 @@ void _init() {
     while ((fn = _patch_inject_init_va[idx++])) { fn(); }
 }
 
-__attribute__((section(".text._patch"))) // This comes before everything (see linker generation script)
+__attribute__((section(".text._patch")))
 void _patch() {
 
-    // Relocate our .got2 entries
+    // Relocate .got2 entries
     _relocate_got2_table();
 
     /** 
@@ -91,14 +70,13 @@ void _patch() {
      */
     extern int stc_max_number_of_heaps;
     stc_max_number_of_heaps = INJECT_HEAP_ID + 1;
-    _patch_x8((void*)0x8015ff63, stc_max_number_of_heaps);
+    PATCH_Write8((void*)0x8015ff63, stc_max_number_of_heaps);
 
     // Prepare the heap
     INJECT_Prepare(USB_MCC_EXTRA);
 
-    // Catch a ride
+    // Hook into major scene init
     MajorScene* majorList = (MajorScene*)Scene_GetMajorSceneDesc();
-
     majorList[MJRKIND_DBGEND] = (MajorScene){
         .is_preload = false,
         .major_id = MJRKIND_DBGEND,

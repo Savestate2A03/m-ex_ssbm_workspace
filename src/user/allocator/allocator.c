@@ -86,8 +86,13 @@ void INJECT_CreateHeapSpace() {
     void* start = injection_heap_pointer;
     void* end = injection_heap_pointer + INJECT_Regions[inject_selection].size;
 
-    start = (void*)(((u32)start + 3) & ~(3)); // round up 32-bit alignment
-    end = (void*)((u32)end & ~0x03);          // round down 32-bit alignment
+    start = (void*)(((u32)start + 7) & ~7); // 8-byte boundary round up
+    end = (void*)((u32)end & ~7);           // 8-byte boundary round down
+
+    if ((u32)end <= (u32)start) {
+        OSReport("[Rei Wolf]: (ERROR) No more space after alignment!\n");
+        return;
+    }
 
     heap = &(stc_ptr_to_OSHeapArray[INJECT_HEAP_ID]); 
 
@@ -102,7 +107,7 @@ void INJECT_CreateHeapSpace() {
     int starting_heap_id = HSD_GetHeapID();
     HSD_SetHeapID(INJECT_HEAP_ID);
 
-    OSReport("[Rei Wolf]: Injected Heap: %p - %p\n", start, start + INJECT_ALLOC_SIZE);
+    OSReport("[Rei Wolf]: Injected Heap: %p - %p (%u bytes)\n", start, end, heap->size);
     OSReport("[Rei Wolf]: Injected Heap ID: %d\n", INJECT_HEAP_ID);
 
     HSD_SetHeapID(starting_heap_id);

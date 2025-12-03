@@ -14,9 +14,9 @@ void CSS_Think(void) {
     if (!think_count || !callbacks) return;
 
     if (*think_count < 5) {
-        OSReport("[Rei Wolf]: think_count: %hu...", *think_count);
+        OSReport("[Rei Wolf]: think_count: %hu...\n", *think_count);
     } else if (*think_count == 5) {
-        OSReport("[Rei Wolf]: think_count: %hu! Ok that's enough counting for now.", *think_count);
+        OSReport("[Rei Wolf]: think_count: %hu! Ok that's enough counting for now.\n", *think_count);
     }
 
     if (*think_count < 100) (*think_count)++; // Stop counting after thinking 100 times
