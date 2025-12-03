@@ -71,9 +71,9 @@ $(LINKER_SCRIPT): $(LINKS_DIR)/melee.link | $(BUILD_DIR)
 
 # C
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c $(HEADERS) | $(BUILD_DIR)
-    @echo "Compiling: $<"
-    @mkdir -p $(dir $@)
-    $(CC) -c $(CFLAGS) -MMD -MP $< -o $@
+	@echo "Compiling: $<"
+	@mkdir -p $(dir $@)
+	$(CC) -c $(CFLAGS) -MMD -MP $< -o $@
 
 -include $(ALL_OBJECTS:.o=.d)
 
